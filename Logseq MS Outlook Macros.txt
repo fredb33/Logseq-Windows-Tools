@@ -1,0 +1,74 @@
+Sub getLogseqItemFullLink()
+
+    Dim objApp As Outlook.Application
+    Dim GetCurrentItem As Object
+    Dim itemUrl As String
+    Dim itemName As String
+    
+    Set objApp = Application
+    On Error Resume Next
+    Select Case TypeName(objApp.ActiveWindow)
+        Case "Explorer"
+            Set GetCurrentItem = objApp.ActiveExplorer.Selection.Item(1)
+        Case "Inspector"
+            Set GetCurrentItem = objApp.ActiveInspector.CurrentItem
+    End Select
+    
+    itemUrl = "outlookurl:" & GetCurrentItem.EntryID
+    itemName = GetCurrentItem.Subject
+    
+    Clipboard "[" & itemName & "](" & itemUrl & ")"
+    
+    
+    Set objApp = Nothing
+    
+End Sub
+
+Sub getLogseqItemSimpleURL()
+
+    Dim objApp As Outlook.Application
+    Dim GetCurrentItem As Object
+    Dim itemUrl As String
+    Dim itemName As String
+    
+    Set objApp = Application
+    On Error Resume Next
+    Select Case TypeName(objApp.ActiveWindow)
+        Case "Explorer"
+            Set GetCurrentItem = objApp.ActiveExplorer.Selection.Item(1)
+        Case "Inspector"
+            Set GetCurrentItem = objApp.ActiveInspector.CurrentItem
+    End Select
+    
+    itemUrl = "outlookurl:" & GetCurrentItem.EntryID
+    
+    Clipboard itemUrl
+    
+    Set objApp = Nothing
+    
+End Sub
+
+Function Clipboard(Optional StoreText As String) As String
+'PURPOSE: Read/Write to Clipboard
+'Source: ExcelHero.com (Daniel Ferry)
+
+Dim x As Variant
+
+'Store as variant for 64-bit VBA support
+  x = StoreText
+
+'Create HTMLFile Object
+  With CreateObject("htmlfile")
+    With .parentWindow.clipboardData
+      Select Case True
+        Case Len(StoreText)
+          'Write to the clipboard
+            .setData "text", x
+        Case Else
+          'Read from the clipboard (no variable passed through)
+            Clipboard = .GetData("text")
+      End Select
+    End With
+  End With
+
+End Function
