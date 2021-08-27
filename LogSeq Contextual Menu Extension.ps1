@@ -1,30 +1,55 @@
-﻿
-
-$NewShellKey10 = "Registry::HKEY_CLASSES_ROOT\*\shell\CopyForLogseq"
+﻿#
+#
+# References:
+#    https://docs.microsoft.com/en-us/windows/win32/shell/context-menu-handlers
+#
 
 # Clean everything
-Remove-Item -Force -Recurse -LiteralPath $NewShellKey10
-New-Item -Path $NewShellKey10 -Value "Copy Path 4 Logseq"
+Remove-Item -Force -Recurse -LiteralPath "Registry::HKEY_CLASSES_ROOT\*\shell\CopyForLogseq"
+Remove-Item -Force -Recurse -LiteralPath "Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell\logseq.geturl"
+Remove-Item -Force -Recurse -LiteralPath "Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell\logseq.getfulllink"
+
+
+# Create the main entry in the context menu
+New-Item -Path "Registry::HKEY_CLASSES_ROOT\*\shell\CopyForLogseq"
 Set-ItemProperty `
-    -LiteralPath $NewShellKey10 `
+    -LiteralPath "Registry::HKEY_CLASSES_ROOT\*\shell\CopyForLogseq" `
+    -Name "MUIVerb" `
+    -Type String `
+    -Value "Copy 4 Logseq"
+Set-ItemProperty `
+    -LiteralPath "Registry::HKEY_CLASSES_ROOT\*\shell\CopyForLogseq" `
     -Name "Icon" `
     -Type ExpandString `
-    -Value "%systemroot%\system32\WindowsPowerShell\v1.0\powershell.exe,0"
-
-# Get-ItemProperty -LiteralPath $NewShellKey20
-
-# The command Key
-
-$NewShellKey20 = $NewShellKey10 + "\command"
-
-Remove-Item -LiteralPath $NewShellKey20
-Get-Item -LiteralPath $NewShellKey20
-New-Item -Path $NewShellKey20
-
-# Final Value to Set: C:\Windows\system32\WindowsPowerShell\v1.0\powershell.exe -NoExit \"file://\" + \"%1\".replace(\"\\\", \"/\") | Set-Clipboard
+    -Value "C:\Users\GVTD3145\AppData\Local\Logseq\logseq.exe,0"
 Set-ItemProperty `
-    -LiteralPath $NewShellKey20 `
+    -LiteralPath "Registry::HKEY_CLASSES_ROOT\*\shell\CopyForLogseq" `
+    -Name "SubCommands" `
+    -Type String `
+    -Value "logseq.geturl;logseq.getfulllink"
+
+# Create the logseq.geturl command
+New-Item -Path "Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell\logseq.geturl" -Value "Get URL"
+New-Item -Path "Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell\logseq.geturl\command"
+Set-ItemProperty `
+    -LiteralPath "Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell\logseq.geturl\command" `
     -Name ‘(Default)’ `
     -Type ExpandString `
     -Value "%systemroot%\system32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -WindowStyle Hidden \`"file://\`" + \`"%1\`".replace(\`"\\\`", \`"/\`") | Set-Clipboard"
+
+# Create the logseq.getfulllink command
+New-Item -Path "Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell\logseq.getfulllink" -Value "Get Full Link"
+New-Item -Path "Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell\logseq.getfulllink\command"
+Set-ItemProperty `
+    -LiteralPath "Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Explorer\CommandStore\Shell\logseq.getfulllink\command" `
+    -Name ‘(Default)’ `
+    -Type ExpandString `
+    -Value "%systemroot%\system32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -WindowStyle Hidden \`"[\`" + (Split-Path \`"%1\`" -leaf) + \`"](file://\`" + \`"%1\`".replace(\`"\\\`", \`"/\`") + \`")\`" | Set-Clipboard"
+
+
+
+
+
+
+
 
