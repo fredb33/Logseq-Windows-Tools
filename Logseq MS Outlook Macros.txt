@@ -14,7 +14,7 @@ Sub getLogseqItemFullLink()
             Set GetCurrentItem = objApp.ActiveInspector.CurrentItem
     End Select
     
-    itemUrl = "outlookurl:" & GetCurrentItem.EntryID
+    itemUrl = "outlookurl://" & GetCurrentItem.EntryID
     itemName = GetCurrentItem.Subject
     
     Clipboard "[" & itemName & "](" & itemUrl & ")"
@@ -40,7 +40,7 @@ Sub getLogseqItemSimpleURL()
             Set GetCurrentItem = objApp.ActiveInspector.CurrentItem
     End Select
     
-    itemUrl = "outlookurl:" & GetCurrentItem.EntryID
+    itemUrl = "outlookurl://" & GetCurrentItem.EntryID
     
     Clipboard itemUrl
     
